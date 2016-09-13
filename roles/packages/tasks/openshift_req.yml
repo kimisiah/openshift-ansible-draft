@@ -1,8 +1,12 @@
-- name: Install && Update Required Packages
+- name: Install Required Packages
   sudo: yes
-  shell: yum install -y {{ item }} && yum update -y
+  shell: yum install -y {{ item }}
   with_items: "{{ list_of_oc_packages }}"
 
+- name: Update Packages
+  sudo: yes
+  shell: yum update -y
+  
 - name: Install and Enable NetworkManager
   sudo: yes
   yum: name=NetworkManager state=present

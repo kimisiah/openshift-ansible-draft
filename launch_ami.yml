@@ -14,7 +14,7 @@
 #  roles:
 #    - common
 - name: Update Centos7 Packages
-  hosts: 127.0.0.1
+  hosts: machines
   connection: local
 
   roles:
