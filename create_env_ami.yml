@@ -1,0 +1,11 @@
+- name: Create AMI for an Environment
+  hosts: 127.0.0.1
+  connection: local
+  remote_user: "{{ ansible_user }}"
+
+  pre_tasks:
+    - fail: msg=Please define the env attribute
+      when: env is not defined
+
+  roles:
+     - aws_create_ami

@@ -1,0 +1,21 @@
+---
+#- name: Create AWS Oracle EBS EC2
+#  hosts: 127.0.0.1
+#  connection: local
+#  roles:
+#    - aws_create # Call roles/create, register the instance private_ip
+#    - { role: aws_route53, when: "custom_hostname is defined", ip_address: '{{ ec2["instances"][0]["private_ip"] }}' } # Call roles/route53
+#    - { role: inventory, when: "custom_hostname is defined" } # Update dynamic inventory template
+
+#- name: Configure Oracle EBS Instance
+#  hosts: ec2_hosts # Generated group from Create AWS Instance
+#  remote_user: "{{ ansible_user }}"
+
+#  roles:
+#    - common
+- name: Update Centos7 Packages
+  hosts: 127.0.0.1
+  connection: local
+
+  roles:
+    - package #install packages

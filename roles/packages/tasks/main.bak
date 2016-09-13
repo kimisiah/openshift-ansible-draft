@@ -1,0 +1,6 @@
+#- include: prepare.yml
+#  sudo: yes
+
+#- include: oracle_req.yml
+
+- include: linux_pkg.yml

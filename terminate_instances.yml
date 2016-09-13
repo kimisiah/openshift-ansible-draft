@@ -1,0 +1,13 @@
+---
+- hosts: '127.0.0.1'
+  connection: local
+  tasks:
+   - name: Terminate Instances due to a Jenkins job Failure
+     ec2:
+      region: '{{ aws_region }}'
+      state: 'absent'
+      instance_ids: "{{ lookup('file', 'instance_ids.txt') }}"
+     register: ec2
+
+   - debug: var=ec2
+    

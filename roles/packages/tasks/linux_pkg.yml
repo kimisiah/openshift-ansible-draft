@@ -1,0 +1,32 @@
+- name: Download Compat-libstdc++-296
+  get_url: url=https://oss.oracle.com/projects/compat-oracle/dist/files/Enterprise_Linux/compat-libstdc++-296-2.96-144.0.2.el7.i686.rpm dest=/tmp
+
+- name: Download Openmotif
+  get_url: url=https://oss.oracle.com/projects/compat-oracle/dist/files/Enterprise_Linux/openmotif21-2.1.30-11.el7.i686.rpm dest=/tmp
+
+- name: Download Xorg
+  get_url: url=https://oss.oracle.com/projects/compat-oracle/dist/files/Enterprise_Linux/xorg-x11-libs-compat-6.8.2-1.EL.33.0.1.i386.rpm dest=/tmp
+
+- name: Download Compat-libstdc++-33 i686
+  get_url: url=http://dev.centos.org/c7.00.03/compat-gcc-32/20140610210635/3.2.3-71.el7.i386/compat-libstdc++-33-3.2.3-71.el7.i686.rpm dest=/tmp
+
+- name: Download Compat-libstdc++-33 x86_64
+  get_url: url=http://dev.centos.org/c7.00.03/compat-gcc-32/20140609192845/3.2.3-71.el7.x86_64/compat-libstdc++-33-3.2.3-71.el7.x86_64.rpm dest=/tmp
+
+- name: Install Downloaded RPMs
+  sudo: yes
+  yum: name=/tmp/compat-libstdc++-296-2.96-144.0.2.el7.i686.rpm state=present
+  yum: name=/tmp/openmotif21-2.1.30-11.el7.i686.rpm state=present
+  yum: name=/tmp/xorg-x11-libs-compat-6.8.2-1.EL.33.0.1.i386.rpm state=present
+  yum: name=/tmp/compat-libstdc++-33-3.2.3-71.el7.i686.rpm state=present
+  yum: name=/tmp/compat-libstdc++-33-3.2.3-71.el7.x86_64.rpm state=present
+
+- name: install remaining RPMs
+  sudo: yes
+  shell: yum install -y {{ item }}
+  with_items: "{{ list_of_packages }}"
+
+- name: Remove s3cfg configuration
+  sudo: yes
+  file: path=/home/{{ ansible_user }}/.s3cfg state=absent
+

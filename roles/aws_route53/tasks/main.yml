@@ -1,0 +1,55 @@
+---
+# Ensure that the domain name is created in route 53
+- name: Create Route 53 Private Domain
+  route53_zone:
+   zone: "{{ domain }}"
+   state: present
+   vpc_id: "{{ vpc_id }}"
+   vpc_region: "{{ aws_region }}"
+   comment: "ADOP Route 53 Private Domain"
+  register: zone_out
+  ignore_errors: True
+
+- debug: var=zone_out
+
+# Retrieve the record set of the custom_hostname
+- name: Check hostname availability in Route 53
+  route53:
+   command: get
+   private_zone: "{{ is_private_zone }}"
+   zone: "{{ hosted_zone }}"
+   record: "{{ custom_hostname|lower }}"
+   type: A
+  register: rec
+
+- debug: var=rec
+
+#- fail: msg="custom_hostname is already being used by another ip"
+#  when: rec.set.value is defined
+
+# Delete the record set if it is already in use
+- name: Delete if the recordset is already in use
+  route53:
+   command: delete
+   private_zone: True
+   zone: "{{ hosted_zone }}"
+   record: "{{ custom_hostname|lower }}"
+   type: A
+   ttl: 300
+   value: "{{ rec.set.value }}"
+  when: rec.set.value is defined
+
+# ADd a new entry in the record set using the custom_hostname
+- name: Add a new entry in Route 53
+  route53:
+   command: create
+   private_zone: True
+   zone: "{{ hosted_zone }}"
+   record: "{{ custom_hostname|lower }}"
+   type: A
+   ttl: 300
+   value: "{{ ip_address }}"
+  register: rec
+
+- debug: var=rec
+

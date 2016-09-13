@@ -1,0 +1,45 @@
+- name: Install && Update Required Packages
+  sudo: yes
+  shell: yum install -y {{ item }} && yum update -y
+  with_items: "{{ list_of_oc_packages }}"
+
+- name: Install and Enable NetworkManager
+  sudo: yes
+  yum: name=NetworkManager state=present
+  shell: systemctl enable NetworkManager
+  service: name=NetworkManager state=started
+  
+- name: Install Docker
+  sudo: yes
+  yum: name=docker state=present
+  
+- name: Update Docker Options
+  sudo: yes
+  shell: sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"' /etc/sysconfig/docker
+
+- name: Create a Persistent Volume
+  sudo: yes
+  shell: pvcreate "{{ item }}"
+  with_items: "{{ list_of_oc_persistent_vol }}"
+  
+- name: Create a Volume Group
+  sudo: yes
+  shell: vgcreate "{{ oc_volume_group }}"
+  
+- name: Update Docker Storage Setup
+- sudo: yes
+- shell: |
+    cat <<EOF > /etc/sysconfig/docker-storage-setup
+    DEVS="{{ item }}"
+    VG="{{ oc_volume_group }}"
+    EOF
+  with_items: "{{ list_of_oc_persistent_vol }}"
+ 
+- name: Setup Docker Storage
+  sudo: yes
+  shell: rm -fr /var/lib/docker
+  shell: docker-storage-setup
+  
+- name: Enable and Start Docker Service
+  sudo: yes
+  shell: systemctl enable docker

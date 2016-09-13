@@ -1,0 +1,15 @@
+---
+- name: Copy libdb.so.2 to /usr/lib
+  sudo: yes 
+  synchronize: 
+    set_remote_user: True
+    src: libdb.so.2
+    dest: /usr/lib/libdb.so.2
+
+- name: Copy unzip 5.50 to /usr/bin
+  sudo: yes
+  synchronize:
+    set_remote_user: True
+    src: unzip
+    dest: /usr/bin/unzip
+

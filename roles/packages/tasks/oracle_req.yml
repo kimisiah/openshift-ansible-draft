@@ -1,0 +1,29 @@
+- name: Configure s3cmd
+  template:
+    src: "s3cfg"
+    dest: "/home/{{ ansible_user }}/.s3cfg"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+# Download EBS installer from s3
+- name: Download from s3
+  shell: s3cmd get s3://pdc-oracle-ebs-installers/ora_installers.tar.gz --force
+          chdir=/tmp
+  register: s3
+
+- debug: var=s3
+  
+# Create stage directory
+- name: Create Stage Directory
+  sudo: yes
+  file: path={{ stage_dir }} state=directory
+        
+- name: Change Stage Directory Ownership
+  sudo: yes
+  shell: chown -R "{{ ansible_user }}". "{{ stage_dir }}"
+        
+# Extract EBS installer archives
+- name: Extract S3 artifacts using pigz
+  shell: pigz -dc /tmp/ora_installers.tar.gz | tar xf -
+             chdir={{ stage_dir }}
+

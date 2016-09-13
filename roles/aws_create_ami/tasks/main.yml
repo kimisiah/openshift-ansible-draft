@@ -1,0 +1,22 @@
+- shell: date +%m_%d_%Y > date_today.txt
+
+- set_fact:
+    env: "base"
+  when: env is not defined
+
+- set_fact:
+    ami_id: "{{ lookup('file', 'instance_ids.txt') }}"
+    ami_name: "ORACLE_EBS_AMI_{{ env }}_{{ lookup('file', 'date_today.txt') }}"
+
+- debug: msg={{ ami_name }}
+
+- ec2_ami:
+    region: "{{ aws_region }}"
+    instance_id: "{{ ami_id }}"
+    wait: yes
+    name: "{{ ami_name }}"
+    wait_timeout: 36000
+  register: instance
+
+- debug: var=instance
+    
