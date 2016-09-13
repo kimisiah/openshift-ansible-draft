@@ -68,11 +68,9 @@ list_of_oc_packages:
   - git
   - net-tools
   - bind-utils
-  - iptable-services
+  - iptables-services
   - bridge-utils
   - bash-completion
-  
-list_of_oc_persistent_vol:
-  - /dev/xvdb
 
 oc_volume_group: 'docker-vg'
+device_name: '/dev/xvdb'

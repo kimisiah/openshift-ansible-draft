@@ -1,50 +1,41 @@
-- name: Install Required Packages
-  sudo: yes
-  shell: yum install -y {{ item }}
-  with_items: "{{ list_of_oc_packages }}"
+- block:
+    - name: Install Required Packages
+      yum: name={{ item }} state=present
+      with_items: "{{ list_of_oc_packages }}"
+  
+    - name: Update Packages
+      yum: name=* state=latest
+  
+    - name: Install and Enable NetworkManager
+      yum: name=NetworkManager state=present
+  
+    - name: Enable and Start NetworkManager
+      service: name=NetworkManager enabled=yes state=started
+  
+    - name: Install Docker
+      yum: name=docker state=present
+  
+    - name: Update Docker Options
+      lineinfile: dest=/etc/sysconfig/docker regexp='^OPTIONS=' line='\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"'
 
-- name: Update Packages
-  sudo: yes
-  shell: yum update -y
-  
-- name: Install and Enable NetworkManager
-  sudo: yes
-  yum: name=NetworkManager state=present
-  
-- name: Enable && Start NetworkManager
-  sudo: yes
-  shell: systemctl enable NetworkManager && systenctl start NetworkManager
-  
-- name: Install Docker
-  sudo: yes
-  yum: name=docker state=present
-  
-- name: Update Docker Options
-  sudo: yes
-  shell: sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"' /etc/sysconfig/docker
+#    - name: Update Docker Options
+#      shell: sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"' /etc/sysconfig/docker
 
-- name: Create a Persistent Volume
-  sudo: yes
-  shell: pvcreate "{{ item }}"
-  with_items: "{{ list_of_oc_persistent_vol }}"
+    - name: Update Docker Storage Setup
+      blockinfile:
+        dest: /etc/sysconfig/docker-storage-setup
+        block: |
+          DEVS=/dev/xvdb
+          VG=docker-vg
   
-- name: Create a Volume Group
-  sudo: yes
-  shell: vgcreate "{{ oc_volume_group }}"
+    - name: Remove Default Docker Storage Library
+      file: path=/var/lib/docker state=absent
   
-- name: Update Docker Storage Setup
-  sudo: yes
-  shell: |
-    cat <<EOF > /etc/sysconfig/docker-storage-setup
-    DEVS="{{ item }}"
-    VG="{{ oc_volume_group }}"
-    EOF
-  with_items: "{{ list_of_oc_persistent_vol }}"
- 
-- name: Setup Docker Storage
-  sudo: yes
-  shell: rm -fr /var/lib/docker && docker-storage-setup
+    - name: Startup Storage Device
+      shell: docker-storage-setup
   
-- name: Enable and Start Docker Service
-  sudo: yes
-  shell: systemctl enable docker
+    - name: Enable and Start Docker Service
+      service: name=docker enabled=yes state=started
+
+  become: true
+  become_user: root
