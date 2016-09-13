@@ -19,3 +19,13 @@
 
   roles:
     - packages #install packages
+    
+- name: OpenShift Installaton of Master
+  hosts: machines
+  connection: local
+  
+  roles:
+    - openshift_install
+  
+  environment:
+    

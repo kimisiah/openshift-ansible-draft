@@ -1,0 +1,56 @@
+- block:
+
+    - name: Install Epel Repository
+      yum: name=epel-release state=present      
+    
+    - name: Enable Epel Repository
+      lineinfile: path=/etc/yum.repos.d/epel.repo regexp='^enabled=1' line='enabled=0'
+    
+    - name: Install Ansible and Dependencies
+      yum: name={{ item }} enablerepo=epel
+      with_items: "{{ ansible_dependencies }}"
+    
+    - name: Fork Latest OpenShift Ansible Version
+      git: repo=clone https://github.com/openshift/openshift-ansible version=master dest=~/openshift-ansible
+      
+    - name: Disable Host Key Checking
+      lineinfile: path=/etc/ansible/ansible.cfg regexp='^#host_key_checking' line='host_key_checking'
+    
+    - name: Set Ansible Hosts
+      blockinfile:
+        dest: /etc/ansible/hosts
+        block: |
+          # Create an OSEv3 group that contains the masters and nodes groups
+          [OSEv3:children]
+          masters
+          nodes
+          
+          # Set variables common for all OSEv3 hosts
+          [OSEv3:vars]
+          # SSH user, this user should allow ssh based auth without requiring a password
+          ansible_ssh_user=centos
+          
+          # If ansible_ssh_user is not root, ansible_sudo must be set to true
+          ansible_sudo=true
+          
+          deployment_type=origin
+          
+          # uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+          openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+          
+          # Use something like apps.<public-ip>.xip.io if you don't have a custom domain
+          openshift_master_default_subdomain=apps.50.112.224.93.xip.io
+          
+          [masters]
+          ip-10-0-0-191.us-west-2.compute.internal
+          
+          [nodes]
+          # Make the master node schedulable by default
+          ip-10-0-0-191.us-west-2.compute.internal openshift_node_labels="{'region': 'infra', 'zone': 'us-west-2b'}" openshift_schedulable=true
+          
+          # You can add some nodes below if you want!
+          #ip-10-0-0-65.us-west-2.compute.internal openshift_node_labels="{'region': 'primary', 'zone': 'us-west-2b'}"
+          ip-10-0-1-102.us-west-2.compute.internal openshift_node_labels="{'region': 'primary', 'zone': 'us-west-2b'}
+    
+  become: true
+  become_user: root

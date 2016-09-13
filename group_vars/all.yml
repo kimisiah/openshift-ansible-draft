@@ -74,3 +74,8 @@ list_of_oc_packages:
 
 oc_volume_group: 'docker-vg'
 device_name: '/dev/xvdb'
+
+#ansible dependencies
+ansible_dependencies:
+  - ansible
+  - pyOpenSSL
