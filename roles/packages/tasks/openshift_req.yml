@@ -3,11 +3,11 @@
   shell: yum install -y {{ item }} && yum update -y
   with_items: "{{ list_of_oc_packages }}"
 
-- name: Install and Enable NetworkManager
-  sudo: yes
-  yum: name=NetworkManager state=present
-  shell: systemctl enable NetworkManager
-  service: name=NetworkManager state=started
+#- name: Install and Enable NetworkManager
+#  sudo: yes
+#  yum: name=NetworkManager state=present
+#  shell: systemctl enable NetworkManager
+#  service: name=NetworkManager state=started
   
 - name: Install Docker
   sudo: yes

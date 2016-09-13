@@ -18,4 +18,4 @@
   connection: local
 
   roles:
-    - package #install packages
+    - packages #install packages
