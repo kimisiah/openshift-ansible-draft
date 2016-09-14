@@ -19,10 +19,7 @@
       yum: name=docker state=present
   
     - name: Update Docker Options
-      lineinfile: dest=/etc/sysconfig/docker regexp='^OPTIONS=' line='\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"'
-
-#    - name: Update Docker Options
-#      shell: sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"' /etc/sysconfig/docker
+      lineinfile: dest=/etc/sysconfig/docker regexp='^OPTIONS=' line={{ docker_opts }}
 
     - name: Update Docker Storage Setup
       blockinfile:
@@ -36,7 +33,6 @@
   
     - name: Startup Storage Device
       shell: docker-storage-setup
-      ignore_errors: True
  
     - name: Enable and Start Docker Service
       service: name=docker enabled=yes state=started

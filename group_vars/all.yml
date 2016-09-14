@@ -76,6 +76,7 @@ oc_volume_group: 'docker-vg'
 device_name: '/dev/xvdb'
 master_nodes_user: 'centos'
 access_key_source: '~/oregon_tf1x1_key.pem'
+docker_opts: 'OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"'
 
 #ansible dependencies
 ansible_dependencies:
