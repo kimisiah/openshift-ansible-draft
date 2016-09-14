@@ -74,6 +74,8 @@ list_of_oc_packages:
 
 oc_volume_group: 'docker-vg'
 device_name: '/dev/xvdb'
+master_nodes_user: 'centos'
+access_key_source: '~/oregon_tf1x1_key.pem'
 
 #ansible dependencies
 ansible_dependencies:

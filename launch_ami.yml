@@ -15,17 +15,12 @@
 #    - common
 - name: Update Centos7 Packages
   hosts: machines
-  connection: local
-
   roles:
     - packages #install packages
     
 - name: OpenShift Installaton of Master
-  hosts: machines
-  connection: local
-  
+  hosts: master
   roles:
     - openshift_install
   
-  environment:
-    
+#  environment: 
