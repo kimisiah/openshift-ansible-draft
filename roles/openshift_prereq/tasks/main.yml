@@ -31,7 +31,7 @@
     - name: Remove Default Docker Storage Library
       file: path=/var/lib/docker state=absent
   
-    - name: Startup Storage Device
+    - name: Startup Docker Storage
       shell: docker-storage-setup
  
     - name: Enable and Start Docker Service
