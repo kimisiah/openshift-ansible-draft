@@ -1,6 +1,0 @@
-#- include: prepare.yml
-#  sudo: yes
-
-#- include: oracle_req.yml
-
-- include: openshift_req.yml

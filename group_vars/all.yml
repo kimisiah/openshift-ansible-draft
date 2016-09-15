@@ -1,66 +1,8 @@
-##
-# All of these values can be overriden by using extra vars for ansible
-# Example: ansible-playbook provision.yml --extra-vars "aws_region=us-east-1 volume_size=1000"
-
-workspace: "./"
-
-# route 53 and ec2 create
-domain: "cmt-eagle.domain"
-vpc_id: "vpc-c896a9ad"
-ansible_user: "ec2-user"
-aws_region: "eu-west-1"
-key_name: "adop_oraclecmt_key" # pre created ec2-key pair
-security_group_id: "sg-40d7ff24" # pre created security group
-instance_type: t2.large
-ami_id: ami-8b8c57f8 # Rhel 7 eu-west ami
-volume_device_name: '/dev/sda1'
-volume_type: 'gp2'
-volume_size: 700
-vpc_subnet_id: 'subnet-d8878eaf'
-assign_public_ip: 'yes'
-
-# route 53
-hosted_zone: 'cmt-eagle.domain'
-is_private_zone: True
- 
-# oracle
-oracle_root_dir: '/u01/oracle'
-root_dir: '/u01'
-# performance
-swap_file_path: "/swapfile"
-swap_file_size: "524288"
-
-# s3
-s3cmd_bucket_url: 's3://pdc-oracle-ebs-bucket'
-s3_bucket_region: 'eu-west-1'
-
-# oracle packages
-stage_dir: "/u02/Stage"
-list_of_packages:
-  - libXrender-0*.i686
-  - binutils-2*.x86_64
-  - compat-db47-4*.i686
-  - gcc-4*.x86_64
-  - gcc-c++-4*.x86_64
-  - glibc-2*.i686 glibc-2*.x86_64
-  - glibc-common-2.*.x86_64
-  - glibc-devel-2*.i686 glibc-devel-2*.x86_64
-  - libgcc-4*.i686 libgcc-4*.x86_64
-  - libstdc++-devel-4*.i686 libstdc++-devel-4*.x86_64
-  - libstdc++-4*.i686 libstdc++-4*.x86_64
-  - libXi-1*.i686
-  - libXp-1*.i686 libXp-1*.x86_64
-  - libaio-0*.i686 libaio-0*.x86_64
-  - libgomp-4*.x86_64
-  - make-3*.x86_64
-  - gdbm-1*.i686 gdbm-1*.x86_64
-  - sysstat-10*.x86_64
-  - util-linux-2*.x86_64
-  - compat-libcap1-1*.x86_64
-  - elfutils-libelf-devel-0*.x86_64*
-  - libaio-devel-0*.x86_64
-  - unixODBC*.i686 unixODBC*.x86_64
-  - xorg-x11-utils-7*.x86_64  
+oc_volume_group: 'docker-vg'
+device_name: '/dev/xvdb'
+master_nodes_user: 'centos'
+access_key_source: '~/oregon_tf1x1_key.pem'
+docker_opts: 'OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"'
 
 # openshift packages
 list_of_oc_packages:
@@ -71,13 +13,7 @@ list_of_oc_packages:
   - iptables-services
   - bridge-utils
   - bash-completion
-
-oc_volume_group: 'docker-vg'
-device_name: '/dev/xvdb'
-master_nodes_user: 'centos'
-access_key_source: '~/oregon_tf1x1_key.pem'
-docker_opts: 'OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16  --log-opt max-size=1M --log-opt max-file=3"'
-
+  
 #ansible dependencies
 ansible_dependencies:
   - ansible
